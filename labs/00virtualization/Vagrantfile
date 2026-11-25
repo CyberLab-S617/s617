@@ -1,0 +1,76 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# S617 Workshop - Vagrantfile
+# ----------------------------------------------------------------------------
+# Builds the workshop VM from a small Ubuntu base box and provisions it with a
+# plain bash script (bootstrap.sh) - no Ansible.
+#
+# WHAT A STUDENT INSTALLS:  VirtualBox + Vagrant.  That's all.
+#
+# This VM is the single environment reused across the S617 labs. It comes up as
+# a GRAPHICAL machine (XFCE desktop) so you can clearly tell the difference
+# between "I'm in the VM" (a desktop in a VirtualBox window) and "I'm in a
+# container" (a bare shell with a different prompt, inside this VM). VMs are
+# taught with VirtualBox itself; containers (Docker/LXC) run inside this VM.
+#
+# USAGE (from the folder holding this Vagrantfile + bootstrap.sh):
+#   vagrant up        # first run: downloads base box, then runs bootstrap.sh
+#   vagrant ssh       # command-line login to the VM
+#   vagrant halt      # shut the VM down
+#   vagrant reload    # restart, re-reading this file
+#   vagrant destroy   # delete it; next `vagrant up` rebuilds clean
+#
+# APPLE SILICON: VirtualBox can't run an x86 box on M-series Macs - those
+# students use the remote lab path. Targets Windows + Intel Macs.
+
+Vagrant.configure("2") do |config|
+  # --- Base box -------------------------------------------------------------
+  config.vm.box = "bento/ubuntu-24.04"
+  # Pin the architecture so `vagrant up` matches the amd64 box in the local
+  # cache instead of re-running the (currently broken) auto-negotiation that
+  # fails with "doesn't support the provider" on the dying Vagrant registry.
+  config.vm.box_architecture = "amd64"
+
+  config.vm.hostname = "s617-workshop"
+
+  # --- Forward container ports to the student's host machine -----------------
+  # Without these, the container ports only exist INSIDE the VM (the VM's own
+  # browser can reach them, but the host can't). Forwarding them lets students
+  # use their OWN browser at http://localhost:<port>, and join the Minecraft
+  # server from a real Minecraft client at localhost:25565.
+  #   host_ip 127.0.0.1  -> reachable only from the student's own machine, not
+  #                         their whole network (safer for the vulnerable app).
+  #   auto_correct true  -> if a host port is already taken, Vagrant picks a
+  #                         free one and prints it at `vagrant up`.
+  config.vm.network "forwarded_port", guest: 8080,  host: 8080,  host_ip: "127.0.0.1", auto_correct: true  # Lab 02 webapp
+  config.vm.network "forwarded_port", guest: 8081,  host: 8081,  host_ip: "127.0.0.1", auto_correct: true  # Lab 03 escape app
+  config.vm.network "forwarded_port", guest: 25565, host: 25565, host_ip: "127.0.0.1", auto_correct: true  # Lab 02 Minecraft
+
+  # --- VirtualBox VM shape --------------------------------------------------
+  config.vm.provider "virtualbox" do |vb|
+    vb.name   = "s617-workshop"
+    vb.gui    = true          # show the VirtualBox window: this VM has a desktop
+    vb.memory = 4096          # comfortable for XFCE + a few containers
+    vb.cpus   = 2
+    # Give each student's VM its own MAC, so clones don't collide on a LAN.
+    vb.customize ["modifyvm", :id, "--macaddress1", "auto"]
+    # Enough video memory for the desktop.
+    vb.customize ["modifyvm", :id, "--vram", "64"]
+    # Share the clipboard (and drag-and-drop) between the host and the VM, so
+    # students can copy commands from the GitHub page and paste them into the
+    # VM's terminal. The base box already includes VirtualBox Guest Additions
+    # (the "agent"); these lines switch the sharing on.
+    vb.customize ["modifyvm", :id, "--clipboard-mode", "bidirectional"]
+    vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
+  end
+
+  # --- Provision with a plain shell script (no Ansible) ---------------------
+  config.vm.provision "shell",
+    path: "bootstrap.sh",
+    env: {
+      # "true" = build the XFCE desktop (the standard workshop setup).
+      # "false" = headless build, for a future lab that needs no GUI.
+      "INSTALL_DESKTOP" => "true"
+    }
+end
