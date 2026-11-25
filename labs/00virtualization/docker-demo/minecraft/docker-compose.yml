@@ -1,0 +1,37 @@
+# S617 Docker Compose demo - a real Minecraft server
+# ----------------------------------------------------------------------------
+# One command spins up a genuine Minecraft server. This is what Compose is for:
+# take a published image, configure it with environment variables, give it a
+# port and a place to keep its data, and run it - reproducibly, anywhere.
+#
+# Bring it up:  docker compose up -d
+# Tear it down: docker compose down        (the world is KEPT - see 'volumes')
+
+services:
+  minecraft:
+    image: itzg/minecraft-server            # a famous, well-maintained image
+    ports:
+      - "25565:25565"                        # the Minecraft port, on the VM
+    environment:
+      EULA: "TRUE"                           # you must accept Mojang's EULA
+      TYPE: "PAPER"                          # PaperMC: lighter/faster than vanilla
+      MEMORY: "1G"                           # JVM heap - keep modest for the VM
+      DIFFICULTY: "normal"
+      MOTD: "S617 Workshop Server"           # shown in the server list
+    volumes:
+      - world:/data                          # the world is saved here and
+                                             # SURVIVES `docker compose down`
+    stdin_open: true                         # keep the server console usable
+    tty: true
+
+  # A tiny companion container, used in Part 5 to show that services reach each
+  # other BY NAME over the private network Compose creates (think: a status
+  # monitor or backup sidecar sitting next to the game server).
+  tools:
+    image: alpine:3.20
+    command: sleep infinity
+    depends_on:
+      - minecraft
+
+volumes:
+  world:                                     # a named volume = persistent data

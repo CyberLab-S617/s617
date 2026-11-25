@@ -1,0 +1,27 @@
+# S617 Lab 03 - THE HARDENED stack (the fix)
+# ----------------------------------------------------------------------------
+# Same app, but configured so that even though the web shell STILL works, it can
+# no longer escape to the host. This is "defense in depth": assume the app gets
+# popped - the container config decides whether that becomes host compromise.
+#
+# What changed vs the vulnerable file:
+#   - NO host bind-mount (the '/:/hostroot' line is gone). Nothing to escape to.
+#   - Runs as a NON-root user.
+#   - The app directory is mounted READ-ONLY.
+#   - ALL Linux capabilities dropped; no new privileges can be gained.
+#
+# Bring it up:  docker compose -f docker-compose.hardened.yml up -d
+
+services:
+  web:
+    image: php:8.3-cli
+    command: php -S 0.0.0.0:8080 -t /var/www/html  # unprivileged port (>1024)
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./site:/var/www/html:ro                    # read-only, app dir ONLY
+    user: "1000:1000"                              # non-root
+    cap_drop:
+      - ALL                                        # drop every capability
+    security_opt:
+      - no-new-privileges:true

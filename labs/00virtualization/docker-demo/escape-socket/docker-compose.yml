@@ -1,0 +1,16 @@
+# S617 Lab 03 (Docker-socket option) - THE VULNERABLE stack
+# ----------------------------------------------------------------------------
+# One mistake, total compromise: this container is given the Docker socket.
+# That sounds harmless ("so the agent can manage containers") and is EXTREMELY
+# common in the real world - CI runners, monitoring agents, dashboards. But the
+# Docker socket is the control channel for the host's Docker daemon, and the
+# daemon runs as root. Whoever holds the socket owns the host.
+#
+# Run it ONLY on your own disposable lab VM.  Bring it up:  docker compose up -d
+
+services:
+  agent:
+    image: docker:cli                              # includes the docker client
+    command: sleep infinity                        # just stay running
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # <-- the whole problem

@@ -1,0 +1,17 @@
+# S617 Lab 03 (Docker-socket option) - THE HARDENED stack (the fix)
+# ----------------------------------------------------------------------------
+# The fix is simple: DON'T give the container the Docker socket. With the mount
+# gone, there is no daemon to command and nothing to escape to.
+#
+# "But my agent really needs the Docker API!" - then don't hand it the raw
+# socket. Put a restricted SOCKET PROXY in front (e.g. tecnativa/docker-socket-
+# proxy) that exposes only the few read-only endpoints it needs. Never the raw
+# socket to an untrusted container.
+#
+# Bring it up:  docker compose -f docker-compose.hardened.yml up -d
+
+services:
+  agent:
+    image: docker:cli
+    command: sleep infinity
+    # No socket mount. The container cannot reach the host's Docker daemon.

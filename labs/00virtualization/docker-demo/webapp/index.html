@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>S617 - It's alive</title>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      background: #0b0f14; color: #e6edf3;
+      font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+    }
+    .card {
+      text-align: center; padding: 2rem 2.5rem; border: 1px solid #1f6feb55;
+      border-radius: 14px; background: #0d1117; box-shadow: 0 0 40px #1f6feb22;
+    }
+    h1 { margin: 0 0 .4rem; font-size: 1.8rem; color: #58a6ff; }
+    p  { margin: .3rem 0; color: #8b949e; }
+    .ok { color: #3fb950; }
+    code { color: #d2a8ff; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Cybersecurity Lab Room S617</h1>
+    <p class="ok">&#9679; This page is being served from inside a container you built.</p>
+    <p>Image: your own <code>Dockerfile</code> &nbsp;|&nbsp; Server: <code>python3 http.server</code></p>
+    <p>If you can read this, your <code>docker build</code> and <code>docker run</code> worked.</p>
+  </div>
+</body>
+</html>

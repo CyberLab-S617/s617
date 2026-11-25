@@ -1,0 +1,19 @@
+# S617 Lab 03 - THE VULNERABLE (misconfigured) stack
+# ----------------------------------------------------------------------------
+# This file contains TWO common, realistic mistakes. Find them as you read:
+#   1. The container runs as ROOT (the default for php:cli here).
+#   2. The host's ENTIRE filesystem is bind-mounted inside the container.
+# Together with the vulnerable app, those turn a web bug into full host control.
+#
+# Run it ONLY on your own disposable lab VM.  Bring it up:  docker compose up -d
+
+services:
+  web:
+    image: php:8.3-cli
+    command: php -S 0.0.0.0:80 -t /var/www/html   # dev web server, as root
+    ports:
+      - "8081:80"                                  # visit http://localhost:8081
+    volumes:
+      - ./site:/var/www/html                       # the web app
+      - /:/hostroot                                # <-- MISTAKE: host '/' mounted
+                                                   #     read-write into the container
