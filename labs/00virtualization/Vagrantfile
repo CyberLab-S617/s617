@@ -1,10 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 #
-# S617 Workshop - Vagrantfile
+# S617 Workshop — Vagrantfile
 # ----------------------------------------------------------------------------
 # Builds the workshop VM from a small Ubuntu base box and provisions it with a
-# plain bash script (bootstrap.sh) - no Ansible.
+# plain bash script (bootstrap.sh) — no Ansible.
 #
 # WHAT A STUDENT INSTALLS:  VirtualBox + Vagrant.  That's all.
 #
@@ -21,7 +21,7 @@
 #   vagrant reload    # restart, re-reading this file
 #   vagrant destroy   # delete it; next `vagrant up` rebuilds clean
 #
-# APPLE SILICON: VirtualBox can't run an x86 box on M-series Macs - those
+# APPLE SILICON: VirtualBox can't run an x86 box on M-series Macs — those
 # students use the remote lab path. Targets Windows + Intel Macs.
 
 Vagrant.configure("2") do |config|
@@ -37,15 +37,14 @@ Vagrant.configure("2") do |config|
   # --- Forward container ports to the student's host machine -----------------
   # Without these, the container ports only exist INSIDE the VM (the VM's own
   # browser can reach them, but the host can't). Forwarding them lets students
-  # use their OWN browser at http://localhost:<port>, and join the Minecraft
-  # server from a real Minecraft client at localhost:25565.
+  # use their OWN browser at http://localhost:<port>.
   #   host_ip 127.0.0.1  -> reachable only from the student's own machine, not
   #                         their whole network (safer for the vulnerable app).
   #   auto_correct true  -> if a host port is already taken, Vagrant picks a
   #                         free one and prints it at `vagrant up`.
-  config.vm.network "forwarded_port", guest: 8080,  host: 8080,  host_ip: "127.0.0.1", auto_correct: true  # Lab 02 webapp
-  config.vm.network "forwarded_port", guest: 8081,  host: 8081,  host_ip: "127.0.0.1", auto_correct: true  # Lab 03 escape app
-  config.vm.network "forwarded_port", guest: 25565, host: 25565, host_ip: "127.0.0.1", auto_correct: true  # Lab 02 Minecraft
+  config.vm.network "forwarded_port", guest: 8080, host: 8080, host_ip: "127.0.0.1", auto_correct: true  # Lab 02 webapp
+  config.vm.network "forwarded_port", guest: 8081, host: 8081, host_ip: "127.0.0.1", auto_correct: true  # Lab 03 escape app
+  config.vm.network "forwarded_port", guest: 3001, host: 3001, host_ip: "127.0.0.1", auto_correct: true  # Lab 02 game server
 
   # --- VirtualBox VM shape --------------------------------------------------
   config.vm.provider "virtualbox" do |vb|
