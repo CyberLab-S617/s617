@@ -1,0 +1,25 @@
+# S617 Docker Compose demo — a browser multiplayer game server
+# ----------------------------------------------------------------------------
+# One command spins up a real game SERVER you play in your browser — no client
+# to install. This is what Compose is for: take a published image, give it a
+# port, and run it. Open http://localhost:3001 once it's up.
+#
+# The game is TOSIOS ("The Open-Source IO Shooter") — a lightweight, browser-
+# based multiplayer shooter. Everyone who opens the page joins in a browser.
+#
+# Bring it up:  docker compose up -d        Tear it down:  docker compose down
+
+services:
+  game:
+    image: halftheopposite/tosios      # published image — pulled, not built
+    ports:
+      - "3001:3001"                     # the game's web port, exposed on the VM
+
+  # A tiny companion container, used in Part 5 to show that services reach each
+  # other BY NAME over the private network Compose creates (think: a status
+  # monitor or a bot sitting next to the game server).
+  tools:
+    image: alpine:3.20
+    command: sleep infinity
+    depends_on:
+      - game
