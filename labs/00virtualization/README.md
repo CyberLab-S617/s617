@@ -2,7 +2,7 @@
 
 Build it, break it, defend it. A hands-on workshop where you stand up your own
 virtual lab with one command, build and run containers with Docker, deploy a
-real **Minecraft server** with Docker Compose, **perform a real container escape
+real **browser game server** with Docker Compose, **perform a real container escape
 and then fix it**, and learn how these systems are attacked and defended -
 finishing with a project for your **GitHub portfolio**.
 
@@ -22,7 +22,7 @@ Work through the files in order:
 3. **[01-namespaces-and-cgroups.md](01-namespaces-and-cgroups.md)** - build a
    container *by hand* and see how isolation really works (and how it leaks).
 4. **[02-docker-and-compose.md](02-docker-and-compose.md)** - build your own
-   Docker image, then run a Minecraft server with Docker Compose.
+   Docker image, then run a browser game server with Docker Compose.
 5. **[03-container-escape-and-mitigation.md](03-container-escape-and-mitigation.md)**
    - perform a real container escape (web shell → host takeover) on your own
    disposable VM, then harden it so the escape fails.
@@ -61,7 +61,7 @@ Everyone's welcome.
 |--- SETUP.md                 # install + run the VM (start here)
 |--- 00-foundations-...md      # concepts + attack/defense
 |--- 01-namespaces-...md       # containers by hand
-|--- 02-docker-and-compose.md  # Docker + Compose (build a web app, run Minecraft)
+|--- 02-docker-and-compose.md  # Docker + Compose (build a web app, run a game)
 |--- 03-container-escape-and-mitigation.md   # perform + fix a container escape
 |--- Vagrantfile               # defines the workshop VM
 |--- bootstrap.sh              # provisions it (Docker, LXC, XFCE desktop)
@@ -70,7 +70,7 @@ Everyone's welcome.
     |   |--- Dockerfile
     |   |--- entrypoint.sh
     |   \--- index.html
-    |--- minecraft/            # Lab 02 Part 4-5: run a server with Compose
+    |--- webgame/              # Lab 02 Part 4-5: run a browser game with Compose
     |   \--- docker-compose.yml
     \--- escape/               # Lab 03: vulnerable + hardened stacks
         |--- site/index.php    #   the deliberately vulnerable app (lab only)

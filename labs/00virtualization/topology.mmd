@@ -1,0 +1,36 @@
+flowchart TB
+    subgraph HOST["Student Computer — Windows / Intel Mac / Linux  (or a Lab S617 workstation)"]
+        BROWSER["Web browser<br/>GitHub: CyberLab-S617/s617<br/>(lab instructions)"]
+        subgraph VBOX["VirtualBox — Type-2 Hypervisor  (+ Vagrant)"]
+            subgraph VM["VM: s617-workshop — Ubuntu 24.04 + XFCE desktop<br/>(THIS is 'a VM' = the 'host' in Lab 03)"]
+                subgraph DOCKER["Docker Engine"]
+                    WEB["webapp container<br/>(image you build)  :8080"]
+                    subgraph COMPOSE["Docker Compose stack — private network"]
+                        MC["game<br/>browser game server  :3001"]
+                        TOOLS["tools<br/>(alpine)"]
+                    end
+                    ESCAPE["ESCAPE LAB (Lab 03)<br/>vulnerable web app  :8081<br/>runs as root + host '/' mounted"]
+                end
+                HOSTFS["Host filesystem<br/>the VM's own /root, /etc, ...<br/>(target of the Lab 03 escape)"]
+                LXC["LXC<br/>system containers"]
+                HAND["Hand-built containers (Lab 01)<br/>unshare - namespaces - cgroups - veth"]
+            end
+        end
+    end
+    BROWSER -. "copy / paste (shared clipboard)" .-> VM
+    TOOLS -. "reaches by name" .-> MC
+    ESCAPE == "escapes via host '/' bind-mount" ==> HOSTFS
+
+    classDef host fill:#e8eef7,stroke:#33415c,stroke-width:1px;
+    classDef vbox fill:#dde7f0,stroke:#1f6f8b,stroke-width:1px;
+    classDef vm fill:#e7f0e4,stroke:#3a7d34,stroke-width:1px;
+    classDef docker fill:#e3f0fb,stroke:#1f6feb,stroke-width:1px;
+    classDef cont fill:#fff6e0,stroke:#b5880f,stroke-width:1px;
+    classDef danger fill:#fde0e0,stroke:#d1242f,stroke-width:2px;
+    class HOST host;
+    class VBOX vbox;
+    class VM vm;
+    class DOCKER,COMPOSE docker;
+    class WEB,MC,TOOLS,LXC,HAND cont;
+    class ESCAPE danger;
+    class HOSTFS vm;
